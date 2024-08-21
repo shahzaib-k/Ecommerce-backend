@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken"
 import { Admin } from "../model/admin.model.js"
 import bcrypt from "bcrypt"
+import dotenv from "dotenv"
+dotenv.config()
+
 
 const register = async (req, res) => {
 
@@ -47,7 +50,7 @@ const login = async (req, res) => {
             return res.status(401).json({message: "Invalid Credientials"})
         }
 
-        const access_token =  jwt.sign({Id: user._id} , "MY_SERET_KEY", {expiresIn: "5h"}  )
+        const access_token =  jwt.sign({Id: user._id} , process.env.ADMIN_SECRET_KEY, {expiresIn: "5h"}  )
  
         return res.cookie("access_token", access_token).status(200).json({message: "Logged In successfully", access_token})
 

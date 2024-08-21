@@ -6,29 +6,29 @@ import bodyParser from "body-parser"
 import { userRouter } from "./routes/user.routes.js"
 import { productRouter } from "./routes/product.routes.js"
 import { adminRouter } from "./routes/admin.routes.js"
-import { emailRouter } from "./routes/email.routes.js"
+import dotenv from "dotenv"
+dotenv.config()
 
 
 const app = express()
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CORS_ORIGIN,
     credentials: true
 }))
 
+app.use(cookieParser())
 app.use("/products", productRouter)
 
 app.use(express.json())
-app.use(express.urlencoded({extended: true, limit : "50kb"}))  // file/image upto 50kb will only be uploaded. when we also increase it   
-app.use(cookieParser())
+app.use(express.urlencoded({extended: true, limit : "50kb"}))  // file/image upto 50kb will only be uploaded   
 app.use(bodyParser.json())
 
 app.use("/auth", userRouter)
 app.use("/admin", adminRouter)
-app.use("/email", emailRouter)
 
 connectDB().then(() => {
-    app.listen("3000" , () => {
-        console.log(`Server is running on port 3000`)
+    app.listen(process.env.PORT , () => {
+        console.log(`Server is running on port ${process.env.PORT}`)
     })
 }).catch((err) => {
     console.log(err);

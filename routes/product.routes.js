@@ -7,11 +7,8 @@ import bodyParser from "body-parser"
 
 const productRouter = express.Router()
 
-// const app = express()
-
 productRouter.post("/hooks", bodyParser.raw({type: 'application/json'}), hooks)
 productRouter.use( express.json())
-
 
 productRouter.post("/upload", upload.single('image'), uploadProducts)
 productRouter.get("/get-products",  getProducts)

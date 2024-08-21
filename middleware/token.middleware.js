@@ -1,4 +1,7 @@
 import jwt from "jsonwebtoken"
+import dotenv from "dotenv"
+dotenv.config()
+
 
 const getToken  = async (req, res, next) => {
 
@@ -11,7 +14,7 @@ const getToken  = async (req, res, next) => {
             return res.status(401).json({message: "Token not found"})
         }
         
-        const user = await jwt.verify(token, "MY_KEY")
+        const user = await jwt.verify(token, process.env.USER_SECRET_KEY)
 
          req.userId =  user.Id
 
@@ -32,7 +35,7 @@ const getAdminToken = async (req, res, next) => {
             return res.status(401).json({message: "Token not found"})
         }
         
-        const user = await jwt.verify(access_token, "MY_SERET_KEY")
+        const user = await jwt.verify(access_token, process.env.ADMIN_SECRET_KEY)
         
         req.userId =  user.Id
         

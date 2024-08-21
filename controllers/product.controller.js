@@ -11,6 +11,7 @@ const app = express()
 
 dotenv.config();
 
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 let cart
@@ -184,7 +185,6 @@ const checkout = async (req, res) => {
     const { id, title, price, quantity, size, image } = req.body;
 
     const product = { id, title, price, quantity, size, image };
-    // console.log('Product Object:', product);
 
     const lineItems = title.map((itemTitle, index) => ({
         price_data: {
@@ -208,8 +208,8 @@ const checkout = async (req, res) => {
             metadata: {
                 cart: JSON.stringify(product)
             },
-            success_url: `http://localhost:5173/complete?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: 'http://localhost:5173/cancel',
+            success_url: `${process.env.BASE_URL}/complete?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.BASE_URL}/cancel`,
             mode: 'payment',
             shipping_address_collection: {
                 allowed_countries: ['US', 'PK']
@@ -217,7 +217,6 @@ const checkout = async (req, res) => {
             invoice_creation: { enabled: true }
         });
 
-        // console.log('---------Session Created----------:', session);
         res.json(session);
     } catch (error) {
         console.error('Error creating session:', error);
@@ -229,12 +228,10 @@ const checkout = async (req, res) => {
 
 
     const complete = async (req, res) => {
-        // console.log("Query Params:", req.query);
 
         const sessionId = req.query.session_id;
     
         if (!sessionId) {
-            // console.log('No session_id provided');
             return res.status(400).json({ message: "No session_id provided" });
         }
     
@@ -265,7 +262,7 @@ const checkout = async (req, res) => {
 
 
     const hooks = async (req, res) => {
-        let signingSecret = "whsec_c1873092fc9ffaa3952562cc98c5ef4f671e3097cf782cccd8b0626ea015b3ca";
+        let signingSecret = process.env.STRIPE_SIGNING_SECRET;
 
         const payload = req.body;
         const sig = req.headers['stripe-signature'];
@@ -274,44 +271,9 @@ const checkout = async (req, res) => {
 
         let event;
 
-        // const emptyCartLogic = async (customerId) => {
-        //     try {
-        //         // Find the customer by their ID
-        //         const customer = await User.findById(customerId);
-                
-        //         // If customer is found
-        //         if (customer) {
-        //             // Set the cart products to an empty array
-        //             customer.cart = [];
-                    
-        //             // Save the updated customer document to the database
-        //             await customer.save();
-                    
-        //             console.log(`Cart emptied for customer with ID: ${customerId}`);
-        //         } else {
-        //             console.log(`Customer with ID ${customerId} not found.`);
-        //         }
-        //     } catch (error) {
-        //         console.error(`Error emptying cart for customer with ID ${customerId}:`, error);
-        //     }
-        //   };
-
-
-        // console.log(event);
-    
-
         try {
           event = stripe.webhooks.constructEvent(payload, sig, signingSecret);
-            // const hostedInvoiceUrl = event.data.object.hosted_invoice_url;
-            //   const invoicePdf = event.data.object.invoice_pdf;
-            //    const data = event.data.object
-
-            //    console.log("--------data---------", data)
-               
-            //     console.log("-------hosted Invoice--------", hostedInvoiceUrl);
-            //   console.log("-------invoicePdf--------", invoicePdf);
-
-
+           
         } catch (error) {
           console.log(error);
           return res.status(400).json({ success: false, message: "Invalid signature" });
@@ -320,18 +282,8 @@ const checkout = async (req, res) => {
         switch (event.type) {
           case 'payment_intent.succeeded':
             const paymentIntentSucceeded = event.data.object;
-            //  Handle the event payment_intent.succeeded
-            // console.log("--------payment-----------", paymentIntentSucceeded);
-            // const data = event.data.object
-
-            // console.log("--------data---------", data.metadata);
-
-            // const hostedInvoiceUrl = event.data.object.hosted_invoice_url;
-            //  const invoicePdf = event.data.object.invoice_pdf;
-
              
             break;             
-            
 
             case 'checkout.session.completed' :
                 
@@ -342,7 +294,6 @@ const checkout = async (req, res) => {
             try {
                 const user = await User.findById(userId);
                 if (user) {
-                    // Move items from cart to purchasedProducts
                 
                     const purchasedProducts = cart.title.map((_, index) => ({
                         id: cart.id[index],
@@ -351,14 +302,10 @@ const checkout = async (req, res) => {
                         quantity: cart.quantity[index],
                         size: cart.size[index],
                         image: cart.image[index],
-                        // color: cart.color[index], // Uncomment and use if needed
                     }));
                 
-                    // Add all purchased products to the user's purchasedProducts array
                     user.purchaseProducts.push(...purchasedProducts);
                     
-
-                    // Empty the user's cart
                     user.cart = [];
                     await user.save();
 
@@ -371,18 +318,8 @@ const checkout = async (req, res) => {
             }
             break;
 
-        // Handle other event types
         default:
-            // console.log(`Unhandled event type ${event.type}`);
     }
-        
-    
-    
-    // console.log(event.type);
-    // console.log(event.data.object);
-    // console.log(event.data.object.id);
-
-    // res.send()
 
     res.json({ success: true, message: "Success" });
 };
