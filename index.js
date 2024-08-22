@@ -23,9 +23,6 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true, limit : "50kb"}))  // file/image upto 50kb will only be uploaded   
 app.use(bodyParser.json())
 
-app.use("/", (req, res) => {
-    res.send("Hello World")
-})
 
 app.use("/auth", userRouter)
 app.use("/admin", adminRouter)
