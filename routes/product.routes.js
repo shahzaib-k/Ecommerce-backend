@@ -19,7 +19,7 @@ productRouter.patch("/update-cart/:id", getToken, updateCart )
 productRouter.post("/checkout", checkout)
 productRouter.get("/complete", complete)
 productRouter.get("/cancel", cancel)
-productRouter.delete("/delete-purchased-products/:id",   deletePurchasedProducts )
+productRouter.delete("/delete-purchased-products/:id",  deletePurchasedProducts )
 
 
 export {productRouter}
