@@ -52,14 +52,8 @@ const login = async (req, res) => {
     
         const token = jwt.sign({Id: user._id}, process.env.USER_SECRET_KEY,  {expiresIn: '5h'})
     
-        return res.status(200).cookie("token", token, {
-            httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'None', 
-            expires: new Date(Date.now() + 5 * 60 * 60 * 1000)
-        }).json({ message: "Logged In successfully", token });
-        
-    
+        return res.status(200).cookie("token", token, {httpOnly: true, sameSite:'none', secure: true}).json({ message: "Logged In successfully", token });
+
     } catch (error) {
        console.error(error)
        res.status(500).json({ message: "Server error, please try again later." });
