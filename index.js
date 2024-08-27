@@ -9,11 +9,10 @@ import { adminRouter } from "./routes/admin.routes.js"
 import dotenv from "dotenv"
 dotenv.config()
 
-
 const app = express()
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
-    credentials: true
+     credentials: true    
 }))
 
 app.use(cookieParser())
@@ -22,7 +21,6 @@ app.use("/products", productRouter)
 app.use(express.json())
 app.use(express.urlencoded({extended: true, limit : "50kb"}))  // file/image upto 50kb will only be uploaded   
 app.use(bodyParser.json())
-
 
 app.use("/auth", userRouter)
 app.use("/admin", adminRouter)
