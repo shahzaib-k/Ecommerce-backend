@@ -52,7 +52,7 @@ const login = async (req, res) => {
     
         const token = jwt.sign({Id: user._id}, process.env.USER_SECRET_KEY,  {expiresIn: '5h'})
     
-        return res.status(200).cookie("token", token, {httpOnly: true, secure: true, sameSite: 'none', maxAge: 24 * 60 * 60 * 1000}).json({ message: "Logged In successfully", token });
+        return res.status(200).cookie("token", token, {secure: true, sameSite: 'none', maxAge: 24 * 60 * 60 * 1000}).json({ message: "Logged In successfully", token });
 
     } catch (error) {
        console.error(error)
