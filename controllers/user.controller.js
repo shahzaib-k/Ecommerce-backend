@@ -60,15 +60,15 @@ const login = async (req, res) => {
     }
 }
 
-
 const logout = async (req, res) => {
 
     try {
-      res.clearCookie("token", {secure: true, sameSite: none})   
+      res.clearCookie("token" , {secure: true, sameSite: 'none'})   
 
       res.status(200).send({message: "Logged out Successfully"})
     } catch (error) {
         console.log(error);
+        res.status(500).send("Internal Server Error")
     }
 }
 
