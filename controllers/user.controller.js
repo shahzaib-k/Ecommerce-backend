@@ -60,6 +60,18 @@ const login = async (req, res) => {
     }
 }
 
+
+const logout = async (req, res) => {
+
+    try {
+      res.clearCookie("token", {secure: true, sameSite: none})   
+
+      res.status(200).send({message: "Logged out Successfully"})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const verifyToken = async (req, res) => {
     const userId = req.userId;
   
@@ -80,5 +92,5 @@ const verifyToken = async (req, res) => {
   
 
 
-export {register, login, verifyToken}
+export {register, login, verifyToken, logout}
 
